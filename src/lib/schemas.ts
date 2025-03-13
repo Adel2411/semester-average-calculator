@@ -1,23 +1,17 @@
-import * as z from "zod";
-import { MODULES } from "./constants";
+import { z } from "zod";
 
 export const moduleSchema = z.object({
-  name: z.string(),
-  coefficient: z.number().positive(),
+  name: z.string().min(1, "Module name is required"),
+  coefficient: z.number().positive("Coefficient must be positive"),
   average: z
     .number()
-    .min(0, "Average must be non-negative")
-    .max(20, "Average must be 20 or less")
-    .multipleOf(0.01, "Average must have at most 2 decimal places"),
+    .min(0, "Score can't be negative")
+    .max(20, "Score can't exceed 20"),
 });
 
 export const formSchema = z.object({
-  modules: z
-    .array(moduleSchema)
-    .length(
-      MODULES.length,
-      `You must provide averages for all ${MODULES.length} modules`,
-    ),
+  modules: z.array(moduleSchema).min(1, "At least one module is required"),
 });
 
 export type FormValues = z.infer<typeof formSchema>;
+export type ModuleType = z.infer<typeof moduleSchema>;
