@@ -6,7 +6,6 @@ export function exportResultsToCSV(data: FormValues, average: number): void {
     0
   );
 
-  // Create CSV content
   const headers = ['Module Name', 'Coefficient', 'Score', 'Weighted Score'];
   const rows = data.modules.map(module => [
     module.name,
@@ -15,7 +14,6 @@ export function exportResultsToCSV(data: FormValues, average: number): void {
     (module.average * module.coefficient).toFixed(2)
   ]);
   
-  // Add total row
   rows.push([
     'TOTAL',
     totalCoefficients.toString(),
@@ -23,17 +21,14 @@ export function exportResultsToCSV(data: FormValues, average: number): void {
     (average * totalCoefficients).toFixed(2)
   ]);
   
-  // Add summary
   rows.push(['', '', '', '']);
   rows.push(['Semester Average', average.toFixed(2), '', '']);
   rows.push(['Status', average >= 10 ? 'Pass' : 'Fail', '', '']);
 
-  // Convert to CSV string
   const csvContent = [headers, ...rows]
     .map(row => row.map(cell => `"${cell}"`).join(','))
     .join('\n');
 
-  // Create and download file
   const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
   const link = document.createElement('a');
   const url = URL.createObjectURL(blob);

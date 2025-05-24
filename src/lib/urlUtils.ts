@@ -1,6 +1,19 @@
 import { FormValues } from "./schemas";
 
+export function isFormDataComplete(data: FormValues): boolean {
+  return data.modules.every(module => 
+    module.name.trim() !== '' && 
+    module.coefficient > 0 && 
+    module.average >= 0 && 
+    module.average <= 20
+  );
+}
+
 export function encodeFormDataToUrl(data: FormValues): string {
+  if (!isFormDataComplete(data)) {
+    return '';
+  }
+  
   const params = new URLSearchParams();
   
   data.modules.forEach((module, index) => {

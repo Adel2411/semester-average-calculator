@@ -15,14 +15,20 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formSchema, FormValues } from "@/lib/schemas";
 import { Plus, Trash2 } from "lucide-react";
 import { ResultView } from "./ResultView";
+import { encodeFormDataToUrl } from "@/lib/urlUtils";
 
 interface AverageFormProps {
   onSubmit: (data: FormValues) => void;
   initialData?: FormValues | null;
+  shouldShowResults?: boolean;
 }
 
-export function AverageForm({ onSubmit, initialData }: AverageFormProps) {
-  const [showResults, setShowResults] = useState(false);
+export function AverageForm({
+  onSubmit,
+  initialData,
+  shouldShowResults = false,
+}: AverageFormProps) {
+  const [showResults, setShowResults] = useState(shouldShowResults);
   const [formData, setFormData] = useState<FormValues | null>(null);
   const [calculatedAverage, setCalculatedAverage] = useState(0);
 
@@ -33,24 +39,41 @@ export function AverageForm({ onSubmit, initialData }: AverageFormProps) {
     },
   });
 
-  // Use fieldArray to manage dynamic modules
   const { fields, append, remove } = useFieldArray({
     control: form.control,
     name: "modules",
   });
 
-  // Update form when initialData changes
   useEffect(() => {
     if (initialData) {
       form.reset(initialData);
-      // If we have initial data, calculate and show results immediately
-      handleSubmit(initialData);
+      if (shouldShowResults) {
+        handleSubmit(initialData);
+      }
     }
-  }, [initialData]);
+  }, [initialData, shouldShowResults]);
 
-  // Add this function to handle form submission
+  // Update URL when form data changes
+  useEffect(() => {
+    const subscription = form.watch((data) => {
+      if (data.modules && data.modules.length > 0) {
+        const validModules = data.modules.filter(
+          (module) => module?.name && module?.coefficient && module?.average !== undefined
+        );
+
+        if (validModules.length > 0) {
+          const formData = { modules: validModules as any };
+          const queryString = encodeFormDataToUrl(formData);
+          const newUrl = `${window.location.pathname}${queryString ? `?${queryString}` : ''}`;
+          window.history.replaceState({}, '', newUrl);
+        }
+      }
+    });
+
+    return () => subscription.unsubscribe();
+  }, [form]);
+
   const handleSubmit = (data: FormValues) => {
-    // Calculate the weighted average
     const totalWeightedScore = data.modules.reduce(
       (sum, module) => sum + module.average * module.coefficient,
       0,
@@ -126,14 +149,17 @@ export function AverageForm({ onSubmit, initialData }: AverageFormProps) {
                             <Input
                               {...field}
                               type="number"
-                              min="0.1"
-                              step="0.1"
+                              min="1"
+                              step="1"
+                              value={
+                                field.value === 0 ? "" : field.value.toString()
+                              }
                               onChange={(e) => {
                                 const value =
                                   e.target.value === ""
-                                    ? 1
+                                    ? 0
                                     : Number.parseFloat(e.target.value);
-                                field.onChange(isNaN(value) ? 1 : value);
+                                field.onChange(isNaN(value) ? 0 : value);
                               }}
                             />
                           </FormControl>
