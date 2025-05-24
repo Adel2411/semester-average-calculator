@@ -74,7 +74,7 @@ export function EditTemplateDataDialog({
       const updatedModules: ModuleType[] = data.modules.map(module => ({
         name: module.name,
         coefficient: module.coefficient,
-        average: 0, // Reset averages in template (keeping template behavior)
+        average: module.average,
       }));
 
       const updatedTemplate = TemplateStorage.updateTemplate(template.id, {
@@ -95,7 +95,6 @@ export function EditTemplateDataDialog({
   const handleClose = () => {
     onOpenChange(false);
     if (template) {
-      // Reset form to original template data
       const templateFormData: FormValues = {
         modules: template.modules.map(module => ({
           name: module.name,
@@ -130,7 +129,7 @@ export function EditTemplateDataDialog({
             Edit Template Data - {template?.name}
           </DialogTitle>
           <DialogDescription>
-            Modify the modules and coefficients for this template. Averages will be reset to 0 when saved.
+            Modify the modules, coefficients, and scores for this template.
           </DialogDescription>
         </DialogHeader>
 
@@ -153,7 +152,7 @@ export function EditTemplateDataDialog({
                       </Button>
                     </div>
 
-                    <div className="grid gap-4 md:grid-cols-2">
+                    <div className="grid gap-4 md:grid-cols-3">
                       <FormField
                         control={form.control}
                         name={`modules.${index}.name`}
@@ -186,6 +185,32 @@ export function EditTemplateDataDialog({
                                   field.onChange(isNaN(value) ? 0 : value);
                                 }}
                                 placeholder="Enter coefficient"
+                              />
+                            </FormControl>
+                            <FormMessage />
+                          </FormItem>
+                        )}
+                      />
+
+                      <FormField
+                        control={form.control}
+                        name={`modules.${index}.average`}
+                        render={({ field }) => (
+                          <FormItem>
+                            <FormLabel>Score</FormLabel>
+                            <FormControl>
+                              <Input
+                                {...field}
+                                type="number"
+                                min="0"
+                                max="20"
+                                step="0.01"
+                                value={field.value === 0 ? "" : field.value.toString()}
+                                onChange={(e) => {
+                                  const value = e.target.value === "" ? 0 : Number.parseFloat(e.target.value);
+                                  field.onChange(isNaN(value) ? 0 : value);
+                                }}
+                                placeholder="Enter score"
                               />
                             </FormControl>
                             <FormMessage />

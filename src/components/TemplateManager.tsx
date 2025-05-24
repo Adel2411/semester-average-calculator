@@ -231,9 +231,10 @@ export function TemplateManager({
                                 className="flex justify-between items-center p-2 bg-muted rounded text-sm"
                               >
                                 <span className="truncate mr-2">{module.name}</span>
-                                <span className="text-muted-foreground text-xs whitespace-nowrap">
-                                  Coeff: {module.coefficient}
-                                </span>
+                                <div className="text-muted-foreground text-xs whitespace-nowrap">
+                                  <span>Coeff: {module.coefficient}</span>
+                                  <span className="ml-2">Score: {module.average}</span>
+                                </div>
                               </div>
                             ))}
                           </div>

@@ -100,12 +100,12 @@ export function SaveTemplateDialog({
               <ul className="text-sm text-muted-foreground space-y-1">
                 {formData.modules.map((module, index) => (
                   <li key={index}>
-                    {module.name} (Coefficient: {module.coefficient})
+                    {module.name} (Coefficient: {module.coefficient}, Score: {module.average})
                   </li>
                 ))}
               </ul>
               <p className="text-xs text-muted-foreground mt-2">
-                Note: Averages will be reset to 0 in the template
+                Note: All data including scores will be saved in the template
               </p>
             </div>
           )}

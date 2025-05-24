@@ -87,7 +87,7 @@ export class TemplateStorage {
       modules: formData.modules.map(module => ({
         name: module.name,
         coefficient: module.coefficient,
-        average: 0, // Reset averages in template
+        average: module.average,
       })),
     });
   }

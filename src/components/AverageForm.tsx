@@ -146,9 +146,11 @@ export function AverageForm({
             onSubmit={form.handleSubmit(handleSubmit)}
             className="space-y-6"
           >
-            {/* Template Selector */}
             <div className="p-4 bg-muted/50 rounded-lg">
               <h4 className="text-sm font-medium mb-3">Quick Start with Template</h4>
+              <p className="text-xs text-muted-foreground mb-3">
+                Templates now include saved scores along with module names and coefficients
+              </p>
               <TemplateSelector onTemplateSelected={handleTemplateSelected} />
             </div>
 
