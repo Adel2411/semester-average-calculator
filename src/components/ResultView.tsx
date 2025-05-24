@@ -1,8 +1,8 @@
 import { FormValues } from "@/lib/schemas";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft, Download, Share2, Copy } from "lucide-react";
-import { exportResultsToCSV } from "@/lib/csvUtils";
+import { ArrowLeft, Download, Share2, Copy, FileText } from "lucide-react";
+import { exportResultsToCSV, exportResultsToPDF } from "@/lib/csvUtils";
 import { generateShareableUrl } from "@/lib/urlUtils";
 import { useState } from "react";
 
@@ -22,6 +22,10 @@ export function ResultView({ data, average, onBack }: ResultViewProps) {
 
   const handleDownloadCSV = () => {
     exportResultsToCSV(data, average);
+  };
+
+  const handleDownloadPDF = async () => {
+    await exportResultsToPDF(data, average);
   };
 
   const handleShare = async () => {
@@ -87,7 +91,15 @@ export function ResultView({ data, average, onBack }: ResultViewProps) {
               variant="outline"
               className="flex-1"
             >
-              <Download className="mr-2 h-4 w-4" /> Download CSV
+              <Download className="mr-2 h-4 w-4" /> CSV
+            </Button>
+
+            <Button
+              onClick={handleDownloadPDF}
+              variant="outline"
+              className="flex-1"
+            >
+              <FileText className="mr-2 h-4 w-4" /> PDF
             </Button>
 
             <Button onClick={handleShare} variant="outline" className="flex-1">
@@ -97,7 +109,7 @@ export function ResultView({ data, average, onBack }: ResultViewProps) {
                 </>
               ) : (
                 <>
-                  <Share2 className="mr-2 h-4 w-4" /> Share Link
+                  <Share2 className="mr-2 h-4 w-4" /> Share
                 </>
               )}
             </Button>

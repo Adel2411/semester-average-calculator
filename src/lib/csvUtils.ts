@@ -1,4 +1,7 @@
 import { FormValues } from "./schemas";
+import { pdf } from '@react-pdf/renderer';
+import { ResultsPDF } from '@/components/ResultsPDF';
+import { createElement } from 'react';
 
 export function exportResultsToCSV(data: FormValues, average: number): void {
   const totalCoefficients = data.modules.reduce(
@@ -40,4 +43,27 @@ export function exportResultsToCSV(data: FormValues, average: number): void {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+}
+
+export async function exportResultsToPDF(data: FormValues, average: number): Promise<void> {
+  try {
+    const pdfDocument = createElement(ResultsPDF, { data, average });
+    const blob = await pdf(pdfDocument).toBlob();
+    
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(blob);
+    
+    link.setAttribute('href', url);
+    link.setAttribute('download', `semester-results-${new Date().toISOString().split('T')[0]}.pdf`);
+    link.style.visibility = 'hidden';
+    
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    
+    // Clean up the URL object
+    URL.revokeObjectURL(url);
+  } catch (error) {
+    console.error('Failed to generate PDF:', error);
+  }
 }
