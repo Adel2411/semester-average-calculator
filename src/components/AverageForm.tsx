@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
@@ -13,14 +13,15 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formSchema, FormValues } from "@/lib/schemas";
-import { Plus, Trash2 } from "lucide-react"; // Import icons
+import { Plus, Trash2 } from "lucide-react";
 import { ResultView } from "./ResultView";
 
 interface AverageFormProps {
   onSubmit: (data: FormValues) => void;
+  initialData?: FormValues | null;
 }
 
-export function AverageForm({ onSubmit }: AverageFormProps) {
+export function AverageForm({ onSubmit, initialData }: AverageFormProps) {
   const [showResults, setShowResults] = useState(false);
   const [formData, setFormData] = useState<FormValues | null>(null);
   const [calculatedAverage, setCalculatedAverage] = useState(0);
@@ -28,7 +29,7 @@ export function AverageForm({ onSubmit }: AverageFormProps) {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      modules: [{ name: "Module 1", coefficient: 1, average: 0 }],
+      modules: initialData?.modules || [{ name: "Module 1", coefficient: 1, average: 0 }],
     },
   });
 
@@ -37,6 +38,15 @@ export function AverageForm({ onSubmit }: AverageFormProps) {
     control: form.control,
     name: "modules",
   });
+
+  // Update form when initialData changes
+  useEffect(() => {
+    if (initialData) {
+      form.reset(initialData);
+      // If we have initial data, calculate and show results immediately
+      handleSubmit(initialData);
+    }
+  }, [initialData]);
 
   // Add this function to handle form submission
   const handleSubmit = (data: FormValues) => {

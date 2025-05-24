@@ -1,13 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FormValues } from "@/lib/schemas";
 import { useAverageCalculator } from "@/hooks/useAverageCalculator";
 import { AverageForm } from "@/components/AverageForm";
 import { ResultCard } from "@/components/ResultCard";
+import { decodeUrlToFormData } from "@/lib/urlUtils";
 
 export default function Home() {
   const [formData, setFormData] = useState<FormValues | null>(null);
+  const [initialData, setInitialData] = useState<FormValues | null>(null);
+
+  // Load data from URL parameters on component mount
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const urlParams = new URLSearchParams(window.location.search);
+      const dataFromUrl = decodeUrlToFormData(urlParams);
+
+      if (dataFromUrl) {
+        setInitialData(dataFromUrl);
+        setFormData(dataFromUrl);
+      }
+    }
+  }, []);
 
   const handleFormSubmit = (data: FormValues) => {
     setFormData(data);
@@ -25,7 +40,7 @@ export default function Home() {
         </p>
       </div>
 
-      <AverageForm onSubmit={handleFormSubmit} />
+      <AverageForm onSubmit={handleFormSubmit} initialData={initialData} />
 
       {formData && <ResultCard average={average} />}
     </main>

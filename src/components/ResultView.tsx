@@ -1,7 +1,10 @@
 import { FormValues } from "@/lib/schemas";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Download, Share2, Copy } from "lucide-react";
+import { exportResultsToCSV } from "@/lib/csvUtils";
+import { generateShareableUrl } from "@/lib/urlUtils";
+import { useState } from "react";
 
 interface ResultViewProps {
   data: FormValues;
@@ -10,10 +13,28 @@ interface ResultViewProps {
 }
 
 export function ResultView({ data, average, onBack }: ResultViewProps) {
+  const [copied, setCopied] = useState(false);
+
   const totalCoefficients = data.modules.reduce(
     (acc, module) => acc + module.coefficient,
     0,
   );
+
+  const handleDownloadCSV = () => {
+    exportResultsToCSV(data, average);
+  };
+
+  const handleShare = async () => {
+    const shareUrl = generateShareableUrl(data);
+
+    try {
+      await navigator.clipboard.writeText(shareUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch (err) {
+      console.error("Failed to copy URL:", err);
+    }
+  };
 
   return (
     <Card>
@@ -56,9 +77,31 @@ export function ResultView({ data, average, onBack }: ResultViewProps) {
             </tbody>
           </table>
 
-          <Button onClick={onBack} className="w-full mt-4">
-            <ArrowLeft className="mr-2 h-4 w-4" /> Back to Form
-          </Button>
+          <div className="flex flex-col sm:flex-row gap-2 mt-4">
+            <Button onClick={onBack} variant="outline" className="flex-1">
+              <ArrowLeft className="mr-2 h-4 w-4" /> Back to Form
+            </Button>
+
+            <Button
+              onClick={handleDownloadCSV}
+              variant="outline"
+              className="flex-1"
+            >
+              <Download className="mr-2 h-4 w-4" /> Download CSV
+            </Button>
+
+            <Button onClick={handleShare} variant="outline" className="flex-1">
+              {copied ? (
+                <>
+                  <Copy className="mr-2 h-4 w-4" /> Copied!
+                </>
+              ) : (
+                <>
+                  <Share2 className="mr-2 h-4 w-4" /> Share Link
+                </>
+              )}
+            </Button>
+          </div>
         </div>
       </CardContent>
     </Card>
