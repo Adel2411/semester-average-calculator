@@ -13,9 +13,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { formSchema, FormValues } from "@/lib/schemas";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Save, LayoutTemplate } from "lucide-react";
 import { ResultView } from "./ResultView";
 import { encodeFormDataToUrl } from "@/lib/urlUtils";
+import { SaveTemplateDialog } from "./SaveTemplateDialog";
+import { TemplateManager } from "./TemplateManager";
+import { TemplateSelector } from "./TemplateSelector";
 
 interface AverageFormProps {
   onSubmit: (data: FormValues) => void;
@@ -31,6 +34,8 @@ export function AverageForm({
   const [showResults, setShowResults] = useState(shouldShowResults);
   const [formData, setFormData] = useState<FormValues | null>(null);
   const [calculatedAverage, setCalculatedAverage] = useState(0);
+  const [showSaveDialog, setShowSaveDialog] = useState(false);
+  const [showTemplateManager, setShowTemplateManager] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -91,6 +96,17 @@ export function AverageForm({
     onSubmit(data);
   };
 
+  const handleTemplateSelected = (templateData: FormValues) => {
+    form.reset(templateData);
+  };
+
+  const handleSaveTemplate = () => {
+    const currentData = form.getValues();
+    if (currentData.modules.length > 0) {
+      setShowSaveDialog(true);
+    }
+  };
+
   return showResults && formData ? (
     <ResultView
       data={formData}
@@ -100,7 +116,29 @@ export function AverageForm({
   ) : (
     <Card>
       <CardHeader>
-        <CardTitle>Enter Module Scores</CardTitle>
+        <div className="flex flex-col gap-4 md:flex-row md:gap-0 items-center justify-center md:justify-between">
+          <CardTitle>Enter Module Scores</CardTitle>
+          <div className="flex items-center gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setShowTemplateManager(true)}
+            >
+              <LayoutTemplate className="mr-2 h-4 w-4" />
+              Templates
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={handleSaveTemplate}
+            >
+              <Save className="mr-2 h-4 w-4" />
+              Save Template
+            </Button>
+          </div>
+        </div>
       </CardHeader>
       <CardContent>
         <Form {...form}>
@@ -108,6 +146,12 @@ export function AverageForm({
             onSubmit={form.handleSubmit(handleSubmit)}
             className="space-y-6"
           >
+            {/* Template Selector */}
+            <div className="p-4 bg-muted/50 rounded-lg">
+              <h4 className="text-sm font-medium mb-3">Quick Start with Template</h4>
+              <TemplateSelector onTemplateSelected={handleTemplateSelected} />
+            </div>
+
             <div className="space-y-4">
               {fields.map((field, index) => (
                 <div key={field.id} className="border p-4 rounded-md">
@@ -222,6 +266,19 @@ export function AverageForm({
             </Button>
           </form>
         </Form>
+
+        {/* Template Dialogs */}
+        <SaveTemplateDialog
+          open={showSaveDialog}
+          onOpenChange={setShowSaveDialog}
+          formData={form.getValues()}
+        />
+        
+        <TemplateManager
+          open={showTemplateManager}
+          onOpenChange={setShowTemplateManager}
+          onTemplateSelected={handleTemplateSelected}
+        />
       </CardContent>
     </Card>
   );

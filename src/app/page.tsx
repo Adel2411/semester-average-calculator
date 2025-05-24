@@ -11,7 +11,6 @@ export default function Home() {
   const [formData, setFormData] = useState<FormValues | null>(null);
   const [initialData, setInitialData] = useState<FormValues | null>(null);
 
-  // Load data from URL parameters on component mount
   useEffect(() => {
     if (typeof window !== "undefined") {
       const urlParams = new URLSearchParams(window.location.search);
