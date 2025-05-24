@@ -1,4 +1,8 @@
-# 🎓 Semester Average Calculator
+<div align="center">
+  <img src="public/logo.png" alt="Semester Average Calculator Logo" width="200" height="200" />
+</div>
+
+# Semester Average Calculator
 
 A modern, feature-rich web application for calculating weighted semester averages with advanced template management, data export capabilities, and URL sharing functionality.
 
