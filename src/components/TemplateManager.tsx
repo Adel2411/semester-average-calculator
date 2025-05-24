@@ -24,7 +24,9 @@ import {
   Hash,
   ChevronDown,
   ChevronUp,
+  Settings,
 } from "lucide-react";
+import { EditTemplateDataDialog } from "./EditTemplateDataDialog";
 
 interface TemplateManagerProps {
   open: boolean;
@@ -39,6 +41,7 @@ export function TemplateManager({
 }: TemplateManagerProps) {
   const [templates, setTemplates] = useState<Template[]>([]);
   const [editingTemplate, setEditingTemplate] = useState<Template | null>(null);
+  const [editingTemplateData, setEditingTemplateData] = useState<Template | null>(null);
   const [editName, setEditName] = useState("");
   const [editDescription, setEditDescription] = useState("");
   const [expandedTemplates, setExpandedTemplates] = useState<Set<string>>(new Set());
@@ -93,6 +96,14 @@ export function TemplateManager({
     const formData = TemplateStorage.applyTemplateToForm(template);
     onTemplateSelected(formData);
     onOpenChange(false);
+  };
+
+  const handleEditTemplateData = (template: Template) => {
+    setEditingTemplateData(template);
+  };
+
+  const handleTemplateDataUpdated = () => {
+    loadTemplates();
   };
 
   const toggleTemplateExpansion = (templateId: string) => {
@@ -176,8 +187,18 @@ export function TemplateManager({
                             size="sm"
                             onClick={() => handleEditTemplate(template)}
                             className="h-8 w-8 p-0"
+                            title="Edit template name and description"
                           >
                             <Edit className="w-4 h-4" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => handleEditTemplateData(template)}
+                            className="h-8 w-8 p-0"
+                            title="Edit modules and coefficients"
+                          >
+                            <Settings className="w-4 h-4" />
                           </Button>
                           <Button
                             variant="ghost"
@@ -275,6 +296,13 @@ export function TemplateManager({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      <EditTemplateDataDialog
+        template={editingTemplateData}
+        open={!!editingTemplateData}
+        onOpenChange={(open) => !open && setEditingTemplateData(null)}
+        onTemplateUpdated={handleTemplateDataUpdated}
+      />
     </>
   );
 }
