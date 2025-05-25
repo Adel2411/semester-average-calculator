@@ -40,7 +40,9 @@ export function AverageForm({
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      modules: initialData?.modules || [{ name: "Module 1", coefficient: 1, average: 0 }],
+      modules: initialData?.modules || [
+        { name: "Module 1", coefficient: 1, average: 0 },
+      ],
     },
   });
 
@@ -63,14 +65,17 @@ export function AverageForm({
     const subscription = form.watch((data) => {
       if (data.modules && data.modules.length > 0) {
         const validModules = data.modules.filter(
-          (module) => module?.name && module?.coefficient && module?.average !== undefined
+          (module) =>
+            module?.name &&
+            module?.coefficient &&
+            module?.average !== undefined,
         );
 
         if (validModules.length > 0) {
           const formData = { modules: validModules as any };
           const queryString = encodeFormDataToUrl(formData);
-          const newUrl = `${window.location.pathname}${queryString ? `?${queryString}` : ''}`;
-          window.history.replaceState({}, '', newUrl);
+          const newUrl = `${window.location.pathname}${queryString ? `?${queryString}` : ""}`;
+          window.history.replaceState({}, "", newUrl);
         }
       }
     });
@@ -147,9 +152,12 @@ export function AverageForm({
             className="space-y-6"
           >
             <div className="p-4 bg-muted/50 rounded-lg">
-              <h4 className="text-sm font-medium mb-3">Quick Start with Template</h4>
+              <h4 className="text-sm font-medium mb-3">
+                Quick Start with Template
+              </h4>
               <p className="text-xs text-muted-foreground mb-3">
-                Templates now include saved scores along with module names and coefficients
+                Templates now include saved scores along with module names and
+                coefficients
               </p>
               <TemplateSelector onTemplateSelected={handleTemplateSelected} />
             </div>
@@ -227,9 +235,7 @@ export function AverageForm({
                               min="0"
                               max="20"
                               step="0.01"
-                              value={
-                                field.value === 0 ? "" : field.value.toString()
-                              }
+                              value={field.value === 0 ? "" : field.value}
                               onChange={(e) => {
                                 const value =
                                   e.target.value === ""
@@ -275,7 +281,7 @@ export function AverageForm({
           onOpenChange={setShowSaveDialog}
           formData={form.getValues()}
         />
-        
+
         <TemplateManager
           open={showTemplateManager}
           onOpenChange={setShowTemplateManager}
