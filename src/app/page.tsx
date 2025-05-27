@@ -31,7 +31,7 @@ export default function Home() {
   const average = useAverageCalculator(formData);
 
   return (
-    <main className="container mx-auto p-4 max-w-4xl pb-8">
+    <main className="container mx-auto p-4 max-w-4xl py-14">
       <div className="text-center mb-12">
         <div className="mb-6">
           <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent mb-4">
@@ -46,7 +46,7 @@ export default function Home() {
           <div className="group relative">
             <div className="flex flex-col items-center p-4 rounded-lg border bg-card/50 hover:bg-card transition-colors duration-200 hover:shadow-md">
               <h3 className="font-semibold text-sm text-foreground mb-1">Weighted Calculations</h3>
-              <p className="text-xs text-muted-foreground text-center">Precise coefficient-based averages</p>
+              <p className="text-xs text-muted-foreground text-center">Precise averages</p>
             </div>
           </div>
           
